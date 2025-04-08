@@ -15,12 +15,19 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("❌ GEMINI_API_KEY fehlt. Bitte in Render als Umgebungsvariable setzen.")
 
-# Konfiguration (REST Transport verwenden)
+# Gemini konfigurieren (REST verwenden)
 genai.configure(api_key=GEMINI_API_KEY, transport="rest")
 
 def send_telegram_message(chat_id, text):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {"chat_id": chat_id, "text": text}
+    
+    # 🐞 Debug-Ausgaben:
+    print("📨 Chat ID:", chat_id)
+    print("📤 Gesendeter Text:", text)
+    print("📦 API URL:", url)
+    print("📦 Payload:", payload)
+
     try:
         response = requests.post(url, json=payload)
         print("📬 Telegram-Antwort:", response.status_code, response.text)
@@ -49,13 +56,16 @@ def webhook():
     if "message" in data:
         chat_id = data["message"]["chat"]["id"]
         user_msg = data["message"].get("text", "")
+        
+        # Debug: Eingehende Nachricht
         print("📥 Eingehende Nachricht:", user_msg)
+
         if user_msg:
             reply = get_gemini_reply(user_msg)
             print("🤖 Antwort von Gemini:", reply)
             send_telegram_message(chat_id, reply)
+
     return "ok", 200
 
 if __name__ == '__main__':
     app.run()
-
