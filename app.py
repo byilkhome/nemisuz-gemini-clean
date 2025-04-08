@@ -19,7 +19,7 @@ if not GEMINI_API_KEY:
 # 🔧 Gemini konfigurieren
 genai.configure(api_key=GEMINI_API_KEY, transport="rest")
 
-# 📤 Telegram Nachricht senden (HTML aktiviert)
+# 📤 Telegram Nachricht senden (mit parse_mode=HTML)
 def send_telegram_message(chat_id, text):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {
@@ -33,11 +33,11 @@ def send_telegram_message(chat_id, text):
     except Exception as e:
         print(f"❗ Telegram-Fehler: {e}")
 
-# 🧼 Benutzerinput & Gemini-Antwort HTML-sicher machen
+# 🧼 Benutzerinput escapen
 def clean_user_input(text):
     return html.escape(text)
 
-# 🤖 Gemini-Antwort holen
+# 🤖 Antwort von Gemini holen
 def get_gemini_reply(user_msg):
     try:
         model = genai.GenerativeModel("gemini-1.5-pro-001")
@@ -55,13 +55,13 @@ def get_gemini_reply(user_msg):
         print(f"❗ Gemini-Fehler: {e}")
         return "⚠️ Fehler beim Antworten mit Gemini."
 
-# 📋 Menütext
+# 📋 Hauptmenü als Text
 def get_main_menu():
     return (
-        "📚 <b>Hauptmenü</b><br><br>"
-        "📘 /lernen – Wortschatz & Grammatik<br>"
-        "📝 /prüfung – Prüfungstraining (telc, Goethe, TestDaF)<br>"
-        "🗣️ /sprechtraining – Aussprache üben<br><br>"
+        "📚 <b>Hauptmenü</b>\n\n"
+        "📘 /lernen – Wortschatz & Grammatik\n"
+        "📝 /prüfung – Prüfungstraining (telc, Goethe, TestDaF)\n"
+        "🗣️ /sprechtraining – Aussprache üben\n\n"
         "❓ Oder stelle mir deine Frage auf Deutsch oder Usbekisch!"
     )
 
@@ -78,30 +78,29 @@ def webhook():
 
         print("📥 Eingehende Nachricht:", user_msg)
 
-        # Eingabeverarbeitung
         if user_msg == "/start":
             reply = (
-                "👋 <b>Salom!</b> Ich bin <b>NemisUz</b> – dein zweisprachiger Deutsch-Coach 🇩🇪🇺🇿<br><br>"
+                "👋 <b>Salom!</b> Ich bin <b>NemisUz</b> – dein zweisprachiger Deutsch-Coach 🇩🇪🇺🇿\n\n"
                 + get_main_menu()
             )
         elif user_msg == "/lernen":
             reply = (
-                "📘 <b>Heute üben wir:</b><br>"
-                "🔹 <b>Wort des Tages:</b> <i>die Wohnung</i> – uy<br>"
-                "🔹 <b>Grammatik:</b> Artikel im Dativ – <i>Ich wohne in der Wohnung.</i><br><br>"
+                "📘 <b>Heute üben wir:</b>\n"
+                "🔹 <b>Wort des Tages:</b> <i>die Wohnung</i> – uy\n"
+                "🔹 <b>Grammatik:</b> Artikel im Dativ – <i>Ich wohne in der Wohnung.</i>\n\n"
                 "👉 Schreib einen Beispielsatz mit <i>der Wohnung</i>!"
             )
         elif user_msg == "/prüfung":
             reply = (
-                "📝 <b>Welche Prüfung möchtest du üben?</b><br>"
-                "• telc B1<br>• Goethe B2<br>• TestDaF<br>• ÖSD C1<br><br>"
+                "📝 <b>Welche Prüfung möchtest du üben?</b>\n"
+                "• telc B1\n• Goethe B2\n• TestDaF\n• ÖSD C1\n\n"
                 "Schreib z. B. <i>telc B1 starten</i>"
             )
         elif user_msg == "/sprechtraining":
             reply = (
-                "🎙️ <b>Wiederhole diesen Satz laut:</b><br>"
-                "<i>Ich habe eine Wohnung in Berlin.</i><br><br>"
-                "Schick mir eine Sprachnachricht – ich gebe dir Feedback (bald verfügbar)."
+                "🎙️ <b>Wiederhole diesen Satz laut:</b>\n"
+                "<i>Ich habe eine Wohnung in Berlin.</i>\n\n"
+                "Schick mir eine Sprachnachricht – ich gebe dir Feedback. (bald verfügbar)"
             )
         else:
             sanitized_input = clean_user_input(user_msg)
@@ -113,4 +112,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
