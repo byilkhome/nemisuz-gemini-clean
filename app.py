@@ -28,7 +28,7 @@ def send_telegram_message(chat_id, text):
 
 def get_gemini_reply(user_msg):
     try:
-        model = genai.GenerativeModel("models/gemini-pro")
+        model = genai.GenerativeModel("gemini-pro")
         response = model.generate_content(
             user_msg,  # KEINE Liste!
             generation_config={"temperature": 0.7, "top_p": 1, "top_k": 1, "max_output_tokens": 512}
